@@ -12,103 +12,103 @@
       display: block;
     }
 
-#nav {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1001;
-  display: flex;
-  gap: 10px;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 6px 10px;
-  border-radius: 8px;
- }
- 
-#nav button {
-  background: transparent;
-  color: rgb(252, 254, 227);
-  border: 1px solid rgba(252, 254, 227, 0.5);
-  font-family: 'Rubik Pixels', cursive;
-  padding: 4px 8px;
-  cursor: pointer;
-  font-size: 0.8rem;
-}
+    #nav {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1001;
+      display: flex;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+    
+    #nav button {
+      background: transparent;
+      color: rgb(252, 254, 227);
+      border: 1px solid rgba(252, 254, 227, 0.5);
+      font-family: 'Rubik Pixels', cursive;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
 
-#nav button:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
+    #nav button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
 
-#about-box {
-  position: fixed;
-  top: 60px;
-  left: 10px;
-  width: 260px;
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(252, 254, 227, 0.4);
-  color: rgb(252, 254, 227);
-  padding: 10px;
-  font-family: 'Courier New', monospace;
-  font-size: 0.9rem;
-  display: none;
-  z-index: 1001;
-  border-radius: 6px;
-}
+    #about-box {
+      position: fixed;
+      top: 60px;
+      left: 10px;
+      width: 260px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid rgba(252, 254, 227, 0.4);
+      color: rgb(252, 254, 227);
+      padding: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      display: none;
+      z-index: 1001;
+      border-radius: 6px;
+    }
 
-#about-box a {
-  color: #fcffc8;
-  text-decoration: underline;
-}
+    #about-box a {
+      color: #fcffc8;
+      text-decoration: underline;
+    }
 
-#opening-screen {
-  position: fixed;
-  z-index: 1002;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: radial-gradient(circle at center, #1a1a2d, #0f0f1a);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Courier New', monospace;
-  color: #fcffc8;
-  text-align: center;
-  transition: opacity 1s ease;
-}
+    #opening-screen {
+      position: fixed;
+      z-index: 1002;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, #1a1a2d, #0f0f1a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      color: #fcffc8;
+      text-align: center;
+      transition: opacity 1s ease;
+    }
 
-#opening-content {
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(252, 254, 227, 0.4);
-  padding: 30px;
-  border-radius: 10px;
-  max-width: 400px;
-}
+    #opening-content {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(252, 254, 227, 0.4);
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 400px;
+    }
 
-#opening-content h1 {
-  font-family: 'Rubik Pixels', cursive;
-  font-size: 1.5rem;
-  margin-bottom: 15px;
-}
+    #opening-content h1 {
+      font-family: 'Rubik Pixels', cursive;
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
 
-#opening-content p {
-  margin: 10px 0;
-  font-size: 0.9rem;
-}
+    #opening-content p {
+      margin: 10px 0;
+      font-size: 0.9rem;
+    }
 
-#opening-content button {
-  margin-top: 20px;
-  padding: 8px 16px;
-  background: transparent;
-  border: 1px solid rgba(252, 254, 227, 0.7);
-  color: #fcffc8;
-  font-size: 0.9rem;
-  font-family: 'Rubik Pixels', cursive;
-  cursor: pointer;
-}
+    #opening-content button {
+      margin-top: 20px;
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid rgba(252, 254, 227, 0.7);
+      color: #fcffc8;
+      font-size: 0.9rem;
+      font-family: 'Rubik Pixels', cursive;
+      cursor: pointer;
+    }
 
-#opening-content button:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
+    #opening-content button:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
 
   </style>
 </head>
@@ -201,7 +201,6 @@
           this.x -= directionX;
           this.y -= directionY;
           
-          // 当粒子被鼠标影响时，有几率播放声音
           if (Math.random() < 0.02 && Date.now() - lastSoundTime > soundCooldown) {
             playSound(this.soundFrequency);
             lastSoundTime = Date.now();
@@ -222,7 +221,7 @@
     }
 
     let particles = [];
-    const particleCount = (canvas.width * canvas.height) / 5000; // 增加粒子密度
+    const particleCount = (canvas.width * canvas.height) / 5000; 
 
     function init() {
       particles = [];
@@ -238,8 +237,7 @@
       const gainNode = audioCtx.createGain();
       const panNode = audioCtx.createStereoPanner();
       
-      // 根据粒子位置设置声相
-      panNode.pan.value = (frequency - 600) / 600; // -1到1之间
+      panNode.pan.value = (frequency - 600) / 600; 
 
       oscillator.type = ['sine', 'square', 'sawtooth', 'triangle'][Math.floor(Math.random() * 4)];
       oscillator.frequency.value = frequency;
@@ -273,7 +271,6 @@
             ctx.lineTo(particles[j].x, particles[j].y);
             ctx.stroke();
 
-            // 如果连线靠近鼠标，则播放声音
             const mx = mouse.x;
             const my = mouse.y;
             const midX = (particles[i].x + particles[j].x) / 2;
@@ -294,7 +291,6 @@
       requestAnimationFrame(animate);
     }
 
-    // 点击页面时触发一系列声音
     canvas.addEventListener('click', () => {
       for (let i = 0; i < 10; i++) {
         setTimeout(() => {
@@ -330,6 +326,9 @@ function startExperience() {
   }, 1000);
 }
 
+//Chat generate the basic things
+//Learned a bit of init from here: https://www.sitepoint.com/community/t/method-init/64558
+//https://developer.mozilla.org/en-US/docs/Web/API/Element/animate
   </script>
 </body>
 </html>
