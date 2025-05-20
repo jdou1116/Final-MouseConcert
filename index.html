@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MouseConcert</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik+Puddles&family=Delius&display=swap" rel="stylesheet" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(-45deg, #fdf6f0, #e0f7fa, #fce4ec, #fff8e1);
+      background-size: 400% 400%;
+      animation: gradientShift 20s ease infinite;
+      font-family: 'Rubik Puddles', cursive;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 3rem;
+      animation: floatTitle 4s ease-in-out infinite;
+      color: #444;
+      text-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+
+    @keyframes floatTitle {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .button-group button {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.3);
+      color: #222;
+      font-weight: bold;
+      backdrop-filter: blur(4px);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: floatButton 6s ease-in-out infinite;
+      font-family: 'Delius', cursive;
+    }
+
+    .button-group button:hover {
+      background: white;
+      color: #000;
+      box-shadow: 0 0 15px rgba(255,255,255,0.6);
+    }
+
+    @keyframes floatButton {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .note {
+      position: absolute;
+      font-size: 1.5rem;
+      color: rgba(100, 100, 100, 0.2);
+      animation: floatNote linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes floatNote {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+】    #glitch-btn.glitch {
+      animation: glitchEffect 0.4s linear;
+      background: #fffb;
+      color: #000;
+    }
+
+    @keyframes glitchEffect {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(2px, -2px); }
+      60% { transform: translate(-1px, 1px); }
+      80% { transform: translate(1px, -1px); }
+      100% { transform: translate(0); }
+    }
+
+    nav {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 1rem;
+      z-index: 1000;
+    }
+
+    nav button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      background: rgba(255 255 255 / 0.6);
+      cursor: pointer;
+      font-family: 'Delius', cursive;
+      transition: background 0.3s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    nav button:hover {
+      background: rgba(255 255 255 / 0.9);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 12px;
+      max-width: 400px;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      font-family: 'Delius', cursive;
+      color: #222;
+      text-align: center;
+      position: relative;
+    }
+
+    .modal h2 {
+      margin-top: 0;
+    }
+
+    .modal button.close-btn {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      border: none;
+      background: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: #666;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <button id="about-btn">About</button>
+    <button id="info-btn">Info</button>
+  </nav>
+
+  <h1>MouseConcert</h1>
+
+  <div class="button-group">
+    <button onclick="location.href='http://127.0.0.1:5500/Final-MouseConcert/Random/index.html'">Random</button>
+    <button id="glitch-btn">Glitch</button>
+    <button onclick="location.href='http://127.0.0.1:5500/Final-MouseConcert/Lines/index.html'">Line</button>
+  </div>
+
+  <div class="modal-overlay" id="about-modal">
+    <div class="modal">
+      <button class="close-btn" aria-label="Close">&times;</button>
+      <h2>About MouseConcert</h2>
+      <p>
+        MouseConcert is an interactive music experience controlled by your mouse movements.
+        It explores a variety of visual styles and musical genres, offering a unique audiovisual journey with each site.
+      </p>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="info-modal">
+    <div class="modal">
+      <button class="close-btn" aria-label="Close">&times;</button>
+      <h2>Project Info</h2>
+      <p><strong>Class:</strong> Introduction to Computation</p>
+      <p><strong>Professor:</strong> Gabriel Drozdov</p>
+      <p><strong>Coder:</strong> Jiayao Dou</p>
+    </div>
+  </div>
+
+  <script>
+    const notes = ['♩','♪','♫','♬','♭','♯'];
+    for (let i = 0; i < 40; i++) {
+      const note = document.createElement('div');
+      note.className = 'note';
+      note.textContent = notes[Math.floor(Math.random() * notes.length)];
+      note.style.left = Math.random() * 100 + 'vw';
+      note.style.top = Math.random() * -100 + 'vh';
+      note.style.fontSize = (Math.random() * 1.5 + 0.5) + 'rem';
+      note.style.animationDuration = (10 + Math.random() * 20) + 's';
+      document.body.appendChild(note);
+    }
+
+    const glitchBtn = document.getElementById('glitch-btn');
+    glitchBtn.addEventListener('click', () => {
+      glitchBtn.classList.add('glitch');
+      setTimeout(() => {
+        glitchBtn.classList.remove('glitch');
+        location.href = 'http://127.0.0.1:5500/Final-MouseConcert/Pixel/index.html';
+      }, 400);
+    });
+
+    const aboutBtn = document.getElementById('about-btn');
+    const infoBtn = document.getElementById('info-btn');
+    const aboutModal = document.getElementById('about-modal');
+    const infoModal = document.getElementById('info-modal');
+    const closeButtons = document.querySelectorAll('.modal .close-btn');
+
+    aboutBtn.addEventListener('click', () => {
+      aboutModal.classList.add('active');
+    });
+
+    infoBtn.addEventLstener('click', () => {
+      infoModal.classList.add('active');
+    });
+
+    closeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.closest('.modal-overlay').classList.remove('active');
+      });
+    });
+
+    [aboutModal, infoModal].forEach(modal => {
+      modal.addEventListener('click', e => {
+        if (e.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
