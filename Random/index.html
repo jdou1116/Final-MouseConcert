@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Scrolling Concert</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fascinate+Inline&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 10000vh; 
+            font-family: "Fascinate Inline", system-ui;
+            font-weight: 400;
+            font-style: normal;
+              overflow-x: hidden;
+            background: #000;
+            color: white;
+            cursor: pointer;
+            transition: background 0.5s ease;
+        }
+        
+        .container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+            background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: gradientShift 10s infinite alternate;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        
+        p {
+            font-size: 1.8rem;
+            max-width: 800px;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .visualizer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .visual-element {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0;
+            mix-blend-mode: screen;
+            transition: transform 0.3s ease-out, opacity 0.5s ease;
+            will-change: transform, opacity;
+        }
+        
+        .particle {
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+        }
+        
+        .shape {
+            background: conic-gradient(from 0deg, transparent 0%, currentColor 20%, transparent 30%);
+        }
+        
+        .about {
+            position: absolute;
+            bottom: 50px;
+            width: 100%;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .show-about {
+            opacity: 1;
+        }
+        
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff00ff, #00ffff);
+            z-index: 100;
+            transition: width 0.1s linear;
+        }
+        
+        .section-indicator {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 0.8rem;
+            opacity: 0.7;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+
+        #nav {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1001;
+            display: flex;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 6px 10px;
+            border-radius: 8px;
+            }
+
+        #nav button {
+            background: transparent;
+            color: rgb(252, 254, 227);
+            border: 1px solid rgba(252, 254, 227, 0.5);
+            font-family: 'Rubik Pixels', cursive;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            }
+
+        #nav button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            }
+
+        #about-box {
+            position: fixed;
+            top: 60px;
+            left: 10px;
+            width: 260px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(252, 254, 227, 0.4);
+            color: rgb(252, 254, 227);
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            display: none;
+            z-index: 1001;
+            border-radius: 6px;
+            }
+
+        #about-box a {
+            color: #fcffc8;
+            text-decoration: underline;
+            }
+    </style>
+</head>
+<body>
+    <div class="visualizer" id="visualizer"></div>
+    
+    <div class="container">
+        <h1>The Scrolling Concert</h1>
+        <p>You will Conduct a concert! When you are ready, click and start scrolling!!!</p>
+    </div>
+    
+    <div id="nav">
+        <button onclick="window.open('http://127.0.0.1:5500/Home/index.html')">Return to Home</button>
+        <button onclick="toggleAbout()">About</button>
+      </div>
+      
+      <div id="about-box">
+        <p>This infinite musical experience transforms your scrolling into a symphony.</p>
+        <p>Explore different sections by scrolling faster or slower.</p>
+        <button onclick="toggleAbout()">Close</button>
+      </div>
+
+    </div>
+    
+    <div class="progress-bar" id="progress"></div>
+    <div class="section-indicator" id="sectionIndicator">Section 1: Cosmic Dawn</div>
+
+    <script>
+        // Wait for user interaction to initialize audio
+        document.body.addEventListener('click', function() {
+            Tone.start();
+            document.querySelector('.container').style.opacity = '0';
+            setTimeout(() => {
+                document.querySelector('.container').style.display = 'none';
+            }, 1000);
+        }, { once: true });
+
+        // Enhanced audio setup
+        const synths = {
+            bass: new Tone.MonoSynth({
+                oscillator: { type: "fatsawtooth", count: 3, spread: 30 },
+                envelope: { attack: 0.01, decay: 0.1, sustain: 0.4, release: 0.5 }
+            }).toDestination(),
+            
+            lead: new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "pulse", width: 0.2 },
+                envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.4 }
+            }).toDestination(),
+            
+            pad: new Tone.PolySynth(Tone.FMSynth, {
+                harmonicity: 2,
+                modulationIndex: 10,
+                oscillator: { type: "sine" },
+                envelope: { attack: 0.5, decay: 0.5, sustain: 1, release: 1 }
+            }).toDestination(),
+            
+            noise: new Tone.NoiseSynth({
+                noise: { type: "pink" },
+                envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.3 }
+            }).toDestination(),
+            
+            pluck: new Tone.PluckSynth().toDestination(),
+            metal: new Tone.MetalSynth().toDestination()
+        };
+
+        // Set volumes
+        synths.bass.volume.value = -10;
+        synths.lead.volume.value = -12;
+        synths.pad.volume.value = -18;
+        synths.noise.volume.value = -24;
+        synths.pluck.volume.value = -15;
+        synths.metal.volume.value = -20;
+
+        // Effects
+        const effects = {
+            reverb: new Tone.Reverb(5).toDestination(),
+            delay: new Tone.PingPongDelay("8n", 0.4).toDestination(),
+            phaser: new Tone.Phaser({
+                frequency: 0.5,
+                octaves: 3,
+                baseFrequency: 500
+            }).toDestination(),
+            chorus: new Tone.Chorus(4, 2.5, 0.5).toDestination()
+        };
+
+        // Connect synths to effects
+        synths.lead.connect(effects.phaser);
+        synths.pad.connect(effects.chorus);
+        synths.pluck.connect(effects.delay);
+        synths.metal.connect(effects.reverb);
+
+        // Extended musical scales for different sections
+        const scales = {
+            cosmic: ["C2", "D2", "F2", "G2", "A2", "C3", "D3", "F3", "G3", "A3", "C4", "D4", "F4", "G4", "A4"],
+            nebula: ["Eb2", "Gb2", "Ab2", "Bb2", "Db3", "Eb3", "Gb3", "Ab3", "Bb3", "Db4", "Eb4", "Gb4"],
+            stellar: ["E2", "F#2", "G#2", "B2", "C#3", "E3", "F#3", "G#3", "B3", "C#4", "E4", "F#4"],
+            quantum: ["C2", "D2", "E2", "F#2", "G#2", "A#2", "C3", "D3", "E3", "F#3", "G#3", "A#3", "C4"]
+        };
+
+        // Section names
+        const sections = [
+            "Cosmic Dawn",
+            "Nebula Drift",
+            "Stellar Winds",
+            "Quantum Echoes",
+            "Galactic Core",
+            "Event Horizon",
+            "Infinite Void"
+        ];
+
+        // Scroll tracking
+        let scrollPosition = 0;
+        let lastScrollPosition = 0;
+        let scrollDirection = 1;
+        let lastPlayTime = 0;
+        let currentSection = 0;
+        let visualElements = [];
+        let lastVisualTime = 0;
+
+        // Scroll event handler
+        window.addEventListener('scroll', function() {
+            const now = Tone.now();
+            scrollPosition = window.scrollY;
+            const scrollSpeed = Math.min(Math.abs(scrollPosition - lastScrollPosition), 100);
+            scrollDirection = scrollPosition > lastScrollPosition ? 1 : -1;
+            
+            // Update progress bar
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const progress = (scrollPosition / maxScroll) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+            
+            // Determine current section
+            currentSection = Math.floor((scrollPosition / maxScroll) * sections.length);
+            document.getElementById('sectionIndicator').textContent = `Section ${currentSection+1}: ${sections[currentSection]}`;
+            
+            // Play sounds based on scroll
+            if (now - lastPlayTime > 0.05) { // Increased frequency
+                playSound(scrollPosition, scrollSpeed, scrollDirection);
+                lastPlayTime = now;
+            }
+            
+            // Update visualization
+            if (now - lastVisualTime > 0.02) { // More frequent visuals
+                updateVisualization(scrollPosition, scrollSpeed, scrollDirection);
+                lastVisualTime = now;
+            }
+            
+            // Show about section when near bottom
+            if (scrollPosition > maxScroll - window.innerHeight * 2) {
+                document.getElementById('about').classList.add('show-about');
+            } else {
+                document.getElementById('about').classList.remove('show-about');
+            }
+            
+            lastScrollPosition = scrollPosition;
+        });
+
+        // Enhanced playSound function
+        function playSound(position, speed, direction) {
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const normalizedPos = position / maxScroll;
+            const normalizedSpeed = Math.min(speed / 50, 1);
+            
+            // Select scale based on section
+            let currentScale;
+            if (currentSection < 2) currentScale = scales.cosmic;
+            else if (currentSection < 4) currentScale = scales.nebula;
+            else if (currentSection < 6) currentScale = scales.stellar;
+            else currentScale = scales.quantum;
+            
+            const noteIndex = Math.floor(normalizedPos * currentScale.length * 2) % currentScale.length;
+            const note = currentScale[noteIndex];
+            const octaveNote = currentScale[(noteIndex + 7) % currentScale.length];
+            
+            // Adjust effects based on position and speed
+            effects.reverb.decay = 1 + normalizedPos * 10;
+            effects.delay.delayTime.value = 0.1 + (1 - normalizedPos) * 0.3;
+            effects.phaser.frequency.value = 0.1 + normalizedSpeed * 2;
+            
+            // Play different instruments based on speed and direction
+            if (speed > 40) {
+                // Fast scroll - rhythmic patterns
+                if (direction > 0) {
+                    synths.bass.triggerAttackRelease(note, "16n");
+                    if (Math.random() > 0.6) {
+                        synths.lead.triggerAttackRelease([note, octaveNote], "32n");
+                    }
+                } else {
+                    synths.pluck.triggerAttackRelease(note, "16n");
+                }
+                
+                if (Math.random() > 0.7) {
+                    synths.noise.triggerAttackRelease("16n");
+                }
+                
+                if (speed > 70 && Math.random() > 0.8) {
+                    synths.metal.triggerAttackRelease(note, "8n");
+                }
+            } else {
+                // Slow scroll - ambient textures
+                if (Math.random() > 0.8) {
+                    const chord = [
+                        note,
+                        currentScale[(noteIndex + 2) % currentScale.length],
+                        currentScale[(noteIndex + 4) % currentScale.length]
+                    ];
+                    synths.pad.triggerAttackRelease(chord, "2n");
+                }
+                
+                if (Math.random() > 0.9) {
+                    synths.pluck.triggerAttackRelease(octaveNote, "1n");
+                }
+            }
+        }
+
+        // Enhanced visualization
+        function updateVisualization(position, speed, direction) {
+            const visualizer = document.getElementById('visualizer');
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const normalizedPos = position / maxScroll;
+            
+            // Create new visual elements
+            if (Math.random() > 0.3) { // More frequent visuals
+                const element = document.createElement('div');
+                element.className = 'visual-element ' + (Math.random() > 0.5 ? 'particle' : 'shape');
+                
+                const size = 5 + Math.random() * 100 + speed;
+                const hue = (normalizedPos * 360 + speed * 10 + currentSection * 60) % 360;
+                const saturation = 70 + Math.random() * 30;
+                const lightness = 50 + Math.random() * 30;
+                
+                element.style.width = `${size}px`;
+                element.style.height = `${size}px`;
+                element.style.color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+                element.style.opacity = '0';
+                
+                // Position based on scroll direction
+                if (direction > 0) {
+                    element.style.left = `${Math.random() * 100}%`;
+                    element.style.top = '0';
+                } else {
+                    element.style.left = `${Math.random() * 100}%`;
+                    element.style.bottom = '0';
+                }
+                
+                visualizer.appendChild(element);
+                
+                // Fade in
+                setTimeout(() => {
+                    element.style.opacity = '0.7';
+                }, 10);
+                
+                visualElements.push({
+                    element: element,
+                    speed: 0.5 + Math.random() * 5 + speed/20,
+                    direction: direction,
+                    rotationSpeed: Math.random() * 2 - 1,
+                    currentRotation: 0,
+                    scale: 0.5 + Math.random()
+                });
+                
+                // Limit number of elements
+                if (visualElements.length > 200) {
+                    const oldElement = visualElements.shift();
+                    oldElement.element.remove();
+                }
+            }
+            
+            // Update existing elements
+            visualElements.forEach((item, index) => {
+                const currentTop = parseFloat(item.element.style.top || '0');
+                const currentBottom = parseFloat(item.element.style.bottom || '0');
+                
+                let newPosition;
+                if (item.direction > 0) {
+                    newPosition = currentTop + item.speed;
+                    item.element.style.top = `${newPosition}px`;
+                } else {
+                    newPosition = currentBottom + item.speed;
+                    item.element.style.bottom = `${newPosition}px`;
+                }
+                
+                // Rotation and scaling
+                item.currentRotation += item.rotationSpeed;
+                item.element.style.transform = 
+                    `rotate(${item.currentRotation}deg) scale(${item.scale})`;
+                
+                // Fade out when near edges
+                const distanceFromEdge = Math.min(
+                    window.innerHeight - newPosition,
+                    newPosition
+                );
+                
+                if (distanceFromEdge < 100) {
+                    item.element.style.opacity = `${distanceFromEdge / 100 * 0.7}`;
+                }
+                
+                // Remove when off screen
+                if ((item.direction > 0 && newPosition > window.innerHeight + 100) || 
+                    (item.direction < 0 && newPosition > window.innerHeight + 100)) {
+                    item.element.remove();
+                    visualElements.splice(index, 1);
+                }
+            });
+            
+            // Background color based on section
+            const bgHue1 = (currentSection * 51 + normalizedPos * 60) % 360;
+            const bgHue2 = (bgHue1 + 60 + currentSection * 30) % 360;
+            document.body.style.background = 
+                `linear-gradient(to bottom, hsl(${bgHue1}, 80%, 8%), hsl(${bgHue2}, 80%, 5%)`;
+        }
+
+        document.getElementById('about-btn').addEventListener('click', () => {
+        document.getElementById('about-popup').style.display = 'block';
+        });
+
+        document.getElementById('close-about').addEventListener('click', () => {
+        document.getElementById('about-popup').style.display = 'none';
+        });
+
+        function toggleAbout() {
+        const box = document.getElementById('about-box');
+        if (box.style.display === 'block') {
+            box.style.display = 'none';
+        } else {
+            box.style.display = 'block';
+        }
+        }
+    </script>
+</body>
+</html>

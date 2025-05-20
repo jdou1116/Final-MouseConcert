@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MouseConcert</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik+Puddles&family=Delius&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(-45deg, #fdf6f0, #e0f7fa, #fce4ec, #fff8e1);
+      background-size: 400% 400%;
+      animation: gradientShift 20s ease infinite;
+      font-family: 'Rubik Puddles', cursive;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 3rem;
+      animation: floatTitle 4s ease-in-out infinite;
+      color: #444;
+      text-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+
+    @keyframes floatTitle {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .button-group button {
+      padding: 0.7rem 1.5rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.3);
+      color: #222;
+      font-weight: bold;
+      backdrop-filter: blur(4px);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: floatButton 6s ease-in-out infinite;
+      font-family: 'Delius', cursive;
+    }
+
+    .button-group button:hover {
+      background: white;
+      color: #000;
+      box-shadow: 0 0 15px rgba(255,255,255,0.6);
+    }
+
+    @keyframes floatButton {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .note {
+      position: absolute;
+      font-size: 1.5rem;
+      color: rgba(100, 100, 100, 0.2);
+      animation: floatNote linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes floatNote {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Glitch effect */
+    #glitch-btn.glitch {
+      animation: glitchEffect 0.4s linear;
+      background: #fffb;
+      color: #000;
+    }
+
+    @keyframes glitchEffect {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(2px, -2px); }
+      60% { transform: translate(-1px, 1px); }
+      80% { transform: translate(1px, -1px); }
+      100% { transform: translate(0); }
+    }
+  </style>
+</head>
+<body>
+  <h1>MouseConcert</h1>
+  <div class="button-group">
+    <button onclick="location.href='http://127.0.0.1:5500/Random/index.html'">Random</button>
+    <button id="glitch-btn">Glitch</button>
+    <button onclick="location.href='elegant.html'">Elegant</button>
+  </div>
+
+  <script>
+    // 音符漂浮动画
+    const notes = ['♩','♪','♫','♬','♭','♯'];
+    for (let i = 0; i < 40; i++) {
+      const note = document.createElement('div');
+      note.className = 'note';
+      note.textContent = notes[Math.floor(Math.random() * notes.length)];
+      note.style.left = Math.random() * 100 + 'vw';
+      note.style.top = Math.random() * -100 + 'vh';
+      note.style.fontSize = (Math.random() * 1.5 + 0.5) + 'rem';
+      note.style.animationDuration = (10 + Math.random() * 20) + 's';
+      document.body.appendChild(note);
+    }
+
+    // Glitch 按钮点击动画和跳转
+    const glitchBtn = document.getElementById('glitch-btn');
+    glitchBtn.addEventListener('click', () => {
+      glitchBtn.classList.add('glitch');
+      setTimeout(() => {
+        glitchBtn.classList.remove('glitch');
+        location.href = 'http://127.0.0.1:5500/Pixel/index.html';
+      }, 400);
+    });
+  </script>
+</body>
+</html>

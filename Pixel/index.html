@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>glithy Concert</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik+Pixels&display=swap" rel="stylesheet">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Rubik Pixels', 'Courier New', monospace;
+      background: #000;
+      color: rgb(252, 254, 227);
+      cursor: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+    }
+
+    #opening {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+      z-index: 1000;
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    #opening h1 {
+      margin-bottom: 2rem;
+      text-shadow: 0 0 10px rgb(255, 255, 255);
+      animation: pulse 2s infinite;
+      font-family: 'Rubik Pixels', cursive;
+    }
+
+    #opening p {
+      font-size: 1.2rem;
+      opacity: 0.8;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    #main-content {
+      display: none;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .poem-line {
+      position: absolute;
+      opacity: 1;
+      text-shadow: 0 0 5px currentColor;
+      max-width: 300px;
+      z-index: 3;
+      font-family: 'Rubik Pixels', cursive;
+      line-height: 1.2;
+    }
+
+
+    .glitch {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: rgb(245, 246, 174);
+      opacity: 0;
+      z-index: 10;
+    }
+
+    .cursor {
+    position: absolute;
+    pointer-events: none;
+    z-index: 100;
+    width: 24px;
+    height: 24px;
+    background-image: url('giphy.gif');
+    background-repeat: no-repeat;
+    background-size: contain;
+    animation: starPulse 1s infinite alternate;
+    transform: translate(-50%, -50%);
+    }
+
+
+    @keyframes starPulse {
+      0% { 
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1);
+      }
+      100% { 
+        transform: translate(-50%, -50%) scale(1.2);
+        filter: brightness(1.5) hue-rotate(20deg);
+      }
+    }
+
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: rgb(255, 255, 255);
+      border-radius: 50%;
+      animation: twinkle 2s infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.2; }
+      100% { opacity: 1; }
+    }
+
+    .spotlight {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.05) 40%,
+        rgba(0, 0, 0, 0) 70%
+      );
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+    }
+
+    #nav {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1001;
+  display: flex;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+#nav button {
+  background: transparent;
+  color: rgb(252, 254, 227);
+  border: 1px solid rgba(252, 254, 227, 0.5);
+  font-family: 'Rubik Pixels', cursive;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+#nav button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+#about-box {
+  position: fixed;
+  top: 60px;
+  left: 10px;
+  width: 260px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(252, 254, 227, 0.4);
+  color: rgb(252, 254, 227);
+  padding: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  display: none;
+  z-index: 1001;
+  border-radius: 6px;
+}
+
+#about-box a {
+  color: #fcffc8;
+  text-decoration: underline;
+}
+
+  </style>
+</head>
+<body>
+  <div id="opening">
+    <h1>GLITCHY CONCERT</h1>
+    <p>Click and move to begin the experience!!!</p>
+  </div>
+
+  <div id="main-content">
+    <div class="stars" id="stars"></div>
+    <div class="spotlight" id="spotlight"></div>
+    <div class="cursor" id="cursor"></div>
+    <div id="poem-container"></div>
+  </div>
+
+  <audio id="music" loop>
+    <source src="star8bit.mp3" type="audio/mp3">
+  </audio>
+
+  <div id="nav">
+    <button onclick="window.open('http://127.0.0.1:5500/Home/index.html')">Return to Home</button>
+    <button onclick="toggleAbout()">About</button>
+  </div>
+  
+  <div id="about-box">
+    <p><strong>Poem:</strong> “Twinkle Twinkle Little Star” by Jane Taylor.</p>
+    <p><strong>Music:</strong> 8-bit remix by 
+      <a href="https://www.youtube.com/watch?v=taRPRYP1QoI" target="_blank">GlitchxCity</a>.
+    </p>
+    <button onclick="toggleAbout()">Close</button>
+  </div>
+  
+  <script>
+    const poem = [
+      "Twinkle, twinkle, little star,",
+      "How I wonder what you are!",
+      "Up above the world so high,",
+      "Like a diamond in the sky.",
+      "When the blazing sun is gone,",
+      "When he nothing shines upon,",
+      "Then you show your little light,",
+      "Twinkle, twinkle, all the night.",
+      "Then the traveler in the dark",
+      "Thanks you for your tiny spark,",
+      "How could he see where to go,",
+      "If you did not twinkle so?",
+      "In the dark blue sky you keep,",
+      "Often through my curtains peep",
+      "For you never shut your eye,",
+      "Till the sun is in the sky.",
+      "As your bright and tiny spark",
+      "Lights the traveler in the dark,",
+      "Though I know not what you are,",
+      "Twinkle, twinkle, little star."
+    ];
+
+    const colors = ['#ffffff', '#fcffc8']; 
+    const sizes = ['1rem', '1.2rem', '1.5rem', '1.8rem', '2rem'];
+
+    const opening = document.getElementById('opening');
+    const main = document.getElementById('main-content');
+    const poemContainer = document.getElementById('poem-container');
+    const cursor = document.getElementById('cursor');
+    const spotlight = document.getElementById('spotlight');
+    const starsContainer = document.getElementById('stars');
+    const music = document.getElementById('music');
+    
+    let mouseX = 0, mouseY = 0;
+    let active = false;
+    let lines = [];
+    let movementTimer;
+    let lastMoveTime = 0;
+    const MOVEMENT_THRESHOLD = 100;
+
+    function createStars() {
+      const starCount = 200;
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 2 + 's';
+        starsContainer.appendChild(star);
+      }
+    }
+
+    function setupGlitch() {
+      for (let i = 0; i < 15; i++) {
+        const glitch = document.createElement('div');
+        glitch.className = 'glitch';
+        poemContainer.appendChild(glitch);
+        lines.push(glitch);
+      }
+    }
+
+    function showRandomLine() {
+      if (!active) return;
+      
+      const line = poem[Math.floor(Math.random() * poem.length)];
+      const element = document.createElement('div');
+      element.className = 'poem-line';
+      element.textContent = line;
+      element.style.color = colors[Math.floor(Math.random() * colors.length)];
+      element.style.fontSize = sizes[Math.floor(Math.random() * sizes.length)];
+      element.style.left = mouseX + (Math.random() * 200 - 100) + 'px';
+      element.style.top = mouseY + (Math.random() * 100 - 50) + 'px';
+      
+      poemContainer.appendChild(element);
+      
+      if (Math.random() > 0.6) {
+        glitchEffect(element);
+      }
+      
+      setTimeout(() => element.remove(), 3000);
+    }
+
+    function glitchEffect(element) {
+      const original = element.textContent;
+      const chars = ['█','░','▒','▓','▄','▀'];
+      let count = 0;
+      
+      const interval = setInterval(() => {
+        element.textContent = original.split('').map(c => 
+          Math.random() > 0.7 ? chars[Math.floor(Math.random()*chars.length)] : c
+        ).join('');
+        
+        if (count++ > 8) {
+          clearInterval(interval);
+          element.textContent = original;
+        }
+      }, 80);
+      
+      if (Math.random() > 0.5) {
+        const line = lines[Math.floor(Math.random()*lines.length)];
+        line.style.top = element.offsetTop + 'px';
+        line.style.opacity = '0.8';
+        setTimeout(() => line.style.opacity = '0', 100);
+      }
+    }
+
+    function checkMovement() {
+      const now = Date.now();
+      if (now - lastMoveTime > MOVEMENT_THRESHOLD && !music.paused) {
+        music.pause();
+      }
+      movementTimer = setTimeout(checkMovement, MOVEMENT_THRESHOLD);
+    }
+
+    function handleMove(e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      lastMoveTime = Date.now();
+      
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top = mouseY + 'px';
+      spotlight.style.left = mouseX + 'px';
+      spotlight.style.top = mouseY + 'px';
+      
+      if (music.paused && active) {
+        music.play().catch(e => console.log('Audio error:', e));
+      }
+      
+      if (Math.random() > 0.9) showRandomLine();
+    }
+
+    function startExperience() {
+      active = true;
+      opening.style.display = 'none';
+      main.style.display = 'block';
+      music.play().catch(e => console.log('Audio error:', e));
+      lastMoveTime = Date.now();
+      checkMovement();
+    }
+
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+    document.addEventListener('copy', (e) => e.preventDefault());
+    document.addEventListener('cut', (e) => e.preventDefault());
+    document.addEventListener('paste', (e) => e.preventDefault());
+
+    function init() {
+      createStars();
+      setupGlitch();
+      opening.addEventListener('click', startExperience);
+      document.addEventListener('mousemove', handleMove);
+      
+      setInterval(() => {
+        if (active && Math.random() > 0.7) showRandomLine();
+      }, 500);
+    }
+
+    init();
+
+    document.getElementById('about-btn').addEventListener('click', () => {
+  document.getElementById('about-popup').style.display = 'block';
+});
+
+document.getElementById('close-about').addEventListener('click', () => {
+  document.getElementById('about-popup').style.display = 'none';
+});
+
+function toggleAbout() {
+  const box = document.getElementById('about-box');
+  if (box.style.display === 'block') {
+    box.style.display = 'none';
+  } else {
+    box.style.display = 'block';
+  }
+}
+
+
+
+// Music: https://www.youtube.com/watch?v=taRPRYP1QoI
+// Font: Rubik Pixels from google fonts
+// https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
+// https://esoapi.uesp.net/100013/data/c/h/e/CheckMovement.html
+// Chatgpt generate the basic code
+// Poem: https://www.poetryfoundation.org/poems/43200/twinkle-twinkle-little-star
+
+
+  </script>
+</body>
+</html>
