@@ -200,7 +200,6 @@
     <div class="section-indicator" id="sectionIndicator">Section 1: Cosmic Dawn</div>
 
     <script>
-        // Wait for user interaction to initialize audio
         document.body.addEventListener('click', function() {
             Tone.start();
             document.querySelector('.container').style.opacity = '0';
@@ -209,7 +208,6 @@
             }, 1000);
         }, { once: true });
 
-        // Enhanced audio setup
         const synths = {
             bass: new Tone.MonoSynth({
                 oscillator: { type: "fatsawtooth", count: 3, spread: 30 },
@@ -237,7 +235,6 @@
             metal: new Tone.MetalSynth().toDestination()
         };
 
-        // Set volumes
         synths.bass.volume.value = -10;
         synths.lead.volume.value = -12;
         synths.pad.volume.value = -18;
@@ -245,7 +242,6 @@
         synths.pluck.volume.value = -15;
         synths.metal.volume.value = -20;
 
-        // Effects
         const effects = {
             reverb: new Tone.Reverb(5).toDestination(),
             delay: new Tone.PingPongDelay("8n", 0.4).toDestination(),
@@ -257,13 +253,11 @@
             chorus: new Tone.Chorus(4, 2.5, 0.5).toDestination()
         };
 
-        // Connect synths to effects
         synths.lead.connect(effects.phaser);
         synths.pad.connect(effects.chorus);
         synths.pluck.connect(effects.delay);
         synths.metal.connect(effects.reverb);
 
-        // Extended musical scales for different sections
         const scales = {
             cosmic: ["C2", "D2", "F2", "G2", "A2", "C3", "D3", "F3", "G3", "A3", "C4", "D4", "F4", "G4", "A4"],
             nebula: ["Eb2", "Gb2", "Ab2", "Bb2", "Db3", "Eb3", "Gb3", "Ab3", "Bb3", "Db4", "Eb4", "Gb4"],
@@ -271,7 +265,6 @@
             quantum: ["C2", "D2", "E2", "F#2", "G#2", "A#2", "C3", "D3", "E3", "F#3", "G#3", "A#3", "C4"]
         };
 
-        // Section names
         const sections = [
             "Cosmic Dawn",
             "Nebula Drift",
@@ -282,7 +275,6 @@
             "Infinite Void"
         ];
 
-        // Scroll tracking
         let scrollPosition = 0;
         let lastScrollPosition = 0;
         let scrollDirection = 1;
@@ -291,35 +283,29 @@
         let visualElements = [];
         let lastVisualTime = 0;
 
-        // Scroll event handler
         window.addEventListener('scroll', function() {
             const now = Tone.now();
             scrollPosition = window.scrollY;
             const scrollSpeed = Math.min(Math.abs(scrollPosition - lastScrollPosition), 100);
             scrollDirection = scrollPosition > lastScrollPosition ? 1 : -1;
             
-            // Update progress bar
             const maxScroll = document.body.scrollHeight - window.innerHeight;
             const progress = (scrollPosition / maxScroll) * 100;
             document.getElementById('progress').style.width = `${progress}%`;
             
-            // Determine current section
             currentSection = Math.floor((scrollPosition / maxScroll) * sections.length);
             document.getElementById('sectionIndicator').textContent = `Section ${currentSection+1}: ${sections[currentSection]}`;
             
-            // Play sounds based on scroll
-            if (now - lastPlayTime > 0.05) { // Increased frequency
+            if (now - lastPlayTime > 0.05) { 
                 playSound(scrollPosition, scrollSpeed, scrollDirection);
                 lastPlayTime = now;
             }
             
-            // Update visualization
-            if (now - lastVisualTime > 0.02) { // More frequent visuals
+            if (now - lastVisualTime > 0.02) { 
                 updateVisualization(scrollPosition, scrollSpeed, scrollDirection);
                 lastVisualTime = now;
             }
             
-            // Show about section when near bottom
             if (scrollPosition > maxScroll - window.innerHeight * 2) {
                 document.getElementById('about').classList.add('show-about');
             } else {
@@ -329,13 +315,11 @@
             lastScrollPosition = scrollPosition;
         });
 
-        // Enhanced playSound function
         function playSound(position, speed, direction) {
             const maxScroll = document.body.scrollHeight - window.innerHeight;
             const normalizedPos = position / maxScroll;
             const normalizedSpeed = Math.min(speed / 50, 1);
             
-            // Select scale based on section
             let currentScale;
             if (currentSection < 2) currentScale = scales.cosmic;
             else if (currentSection < 4) currentScale = scales.nebula;
@@ -346,14 +330,11 @@
             const note = currentScale[noteIndex];
             const octaveNote = currentScale[(noteIndex + 7) % currentScale.length];
             
-            // Adjust effects based on position and speed
             effects.reverb.decay = 1 + normalizedPos * 10;
             effects.delay.delayTime.value = 0.1 + (1 - normalizedPos) * 0.3;
             effects.phaser.frequency.value = 0.1 + normalizedSpeed * 2;
             
-            // Play different instruments based on speed and direction
             if (speed > 40) {
-                // Fast scroll - rhythmic patterns
                 if (direction > 0) {
                     synths.bass.triggerAttackRelease(note, "16n");
                     if (Math.random() > 0.6) {
@@ -371,7 +352,6 @@
                     synths.metal.triggerAttackRelease(note, "8n");
                 }
             } else {
-                // Slow scroll - ambient textures
                 if (Math.random() > 0.8) {
                     const chord = [
                         note,
@@ -387,14 +367,12 @@
             }
         }
 
-        // Enhanced visualization
         function updateVisualization(position, speed, direction) {
             const visualizer = document.getElementById('visualizer');
             const maxScroll = document.body.scrollHeight - window.innerHeight;
             const normalizedPos = position / maxScroll;
             
-            // Create new visual elements
-            if (Math.random() > 0.3) { // More frequent visuals
+            if (Math.random() > 0.3) { 
                 const element = document.createElement('div');
                 element.className = 'visual-element ' + (Math.random() > 0.5 ? 'particle' : 'shape');
                 
@@ -408,7 +386,6 @@
                 element.style.color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
                 element.style.opacity = '0';
                 
-                // Position based on scroll direction
                 if (direction > 0) {
                     element.style.left = `${Math.random() * 100}%`;
                     element.style.top = '0';
@@ -419,7 +396,6 @@
                 
                 visualizer.appendChild(element);
                 
-                // Fade in
                 setTimeout(() => {
                     element.style.opacity = '0.7';
                 }, 10);
@@ -433,14 +409,12 @@
                     scale: 0.5 + Math.random()
                 });
                 
-                // Limit number of elements
                 if (visualElements.length > 200) {
                     const oldElement = visualElements.shift();
                     oldElement.element.remove();
                 }
             }
             
-            // Update existing elements
             visualElements.forEach((item, index) => {
                 const currentTop = parseFloat(item.element.style.top || '0');
                 const currentBottom = parseFloat(item.element.style.bottom || '0');
@@ -454,12 +428,10 @@
                     item.element.style.bottom = `${newPosition}px`;
                 }
                 
-                // Rotation and scaling
                 item.currentRotation += item.rotationSpeed;
                 item.element.style.transform = 
                     `rotate(${item.currentRotation}deg) scale(${item.scale})`;
                 
-                // Fade out when near edges
                 const distanceFromEdge = Math.min(
                     window.innerHeight - newPosition,
                     newPosition
@@ -469,7 +441,6 @@
                     item.element.style.opacity = `${distanceFromEdge / 100 * 0.7}`;
                 }
                 
-                // Remove when off screen
                 if ((item.direction > 0 && newPosition > window.innerHeight + 100) || 
                     (item.direction < 0 && newPosition > window.innerHeight + 100)) {
                     item.element.remove();
@@ -477,7 +448,6 @@
                 }
             });
             
-            // Background color based on section
             const bgHue1 = (currentSection * 51 + normalizedPos * 60) % 360;
             const bgHue2 = (bgHue1 + 60 + currentSection * 30) % 360;
             document.body.style.background = 
@@ -500,6 +470,8 @@
             box.style.display = 'block';
         }
         }
+
+//
     </script>
 </body>
 </html>

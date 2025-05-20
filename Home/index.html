@@ -88,8 +88,7 @@
       100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
     }
 
-    /* Glitch effect */
-    #glitch-btn.glitch {
+】    #glitch-btn.glitch {
       animation: glitchEffect 0.4s linear;
       background: #fffb;
       color: #000;
@@ -104,7 +103,6 @@
       100% { transform: translate(0); }
     }
 
-    /* Nav bar */
     nav {
       position: fixed;
       top: 10px;
@@ -130,7 +128,6 @@
       background: rgba(255 255 255 / 0.9);
     }
 
-    /* Modal styles */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -188,7 +185,6 @@
     <button onclick="location.href='elegant.html'">Elegant</button>
   </div>
 
-  <!-- About Modal -->
   <div class="modal-overlay" id="about-modal">
     <div class="modal">
       <button class="close-btn" aria-label="Close">&times;</button>
@@ -200,7 +196,6 @@
     </div>
   </div>
 
-  <!-- Info Modal -->
   <div class="modal-overlay" id="info-modal">
     <div class="modal">
       <button class="close-btn" aria-label="Close">&times;</button>
@@ -212,7 +207,6 @@
   </div>
 
   <script>
-    // 音符漂浮动画
     const notes = ['♩','♪','♫','♬','♭','♯'];
     for (let i = 0; i < 40; i++) {
       const note = document.createElement('div');
@@ -225,7 +219,6 @@
       document.body.appendChild(note);
     }
 
-    // Glitch 按钮点击动画和跳转
     const glitchBtn = document.getElementById('glitch-btn');
     glitchBtn.addEventListener('click', () => {
       glitchBtn.classList.add('glitch');
@@ -235,7 +228,6 @@
       }, 400);
     });
 
-    // Modal open/close logic
     const aboutBtn = document.getElementById('about-btn');
     const infoBtn = document.getElementById('info-btn');
     const aboutModal = document.getElementById('about-modal');
@@ -256,7 +248,6 @@
       });
     });
 
-    // Close modal if clicking outside modal content
     [aboutModal, infoModal].forEach(modal => {
       modal.addEventListener('click', e => {
         if (e.target === modal) {

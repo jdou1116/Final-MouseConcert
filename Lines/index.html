@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LineMusic</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #0f0f1a;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particleCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    const mouse = {
+      x: null,
+      y: null,
+      radius: 100
+    };
+
+    window.addEventListener('mousemove', e => {
+      mouse.x = e.x;
+      mouse.y = e.y;
+    });
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      init();
+    });
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 2 + 1;
+        this.baseX = x;
+        this.baseY = y;
+        this.density = (Math.random() * 30) + 1;
+        this.color = `hsl(${Math.random() * 60 + 200}, 100%, 50%)`;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+
+      update() {
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        const forceDirectionX = dx / distance;
+        const forceDirectionY = dy / distance;
+        const maxDistance = mouse.radius;
+        let force = (maxDistance - distance) / maxDistance;
+        if (force < 0) force = 0;
+
+        const directionX = forceDirectionX * force * this.density;
+        const directionY = forceDirectionY * force * this.density;
+
+        if (distance < mouse.radius) {
+          this.x -= directionX;
+          this.y -= directionY;
+        } else {
+          if (this.x !== this.baseX) {
+            const dx = this.x - this.baseX;
+            this.x -= dx / 20;
+          }
+          if (this.y !== this.baseY) {
+            const dy = this.y - this.baseY;
+            this.y -= dy / 20;
+          }
+        }
+
+        this.draw();
+      }
+    }
+
+    let particles = [];
+    const particleCount = (canvas.width * canvas.height) / 9000;
+
+    function init() {
+      particles = [];
+      for (let i = 0; i < particleCount; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        particles.push(new Particle(x, y));
+      }
+    }
+
+    function playSound(frequency) {
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+
+      oscillator.type = 'sine';
+      oscillator.frequency.value = frequency;
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.4);
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 100) {
+            const opacity = 1 - distance / 100;
+            ctx.strokeStyle = `rgba(100, 200, 255, ${opacity})`;
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+
+            // 如果连线靠近鼠标，则播放声音
+            const mx = mouse.x;
+            const my = mouse.y;
+            const midX = (particles[i].x + particles[j].x) / 2;
+            const midY = (particles[i].y + particles[j].y) / 2;
+            const distToMouse = Math.hypot(mx - midX, my - midY);
+
+            if (distToMouse < 50 && Math.random() < 0.01) { // 几率控制，避免太吵
+              const freq = 200 + (particles[i].x / canvas.width) * 800;
+              playSound(freq);
+            }
+          }
+        }
+
+        particles[i].update();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    init();
+    animate();
+  </script>
+</body>
+</html>
