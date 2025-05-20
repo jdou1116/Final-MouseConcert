@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Elegant Audio Visualization</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #121212;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+        canvas {
+            display: block;
+        }
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            text-align: center;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .upload-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .upload-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="visualizer"></canvas>
+    <div class="controls">
+        <label for="audio-upload" class="upload-btn">Choose Music File</label>
+        <input id="audio-upload" type="file" accept="audio/*" />
+        <p id="song-info" style="margin-top: 10px;"></p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('visualizer');
+        const ctx = canvas.getContext('2d');
+        const uploadBtn = document.getElementById('audio-upload');
+        const songInfo = document.getElementById('song-info');
+        
+        // Set canvas to window size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        // Audio context and nodes
+        let audioContext;
+        let analyser;
+        let audioSource;
+        let audioElement;
+        let dataArray;
+        let bufferLength;
+        
+        // Initialize audio context on user interaction
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 2048;
+            bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+        }
+        
+        // Handle file upload
+        uploadBtn.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (!audioContext) {
+                initAudio();
+            }
+            
+            // Stop previous audio if playing
+            if (audioElement) {
+                audioElement.pause();
+                if (audioSource) {
+                    audioSource.disconnect();
+                }
+            }
+            
+            // Create audio element and connect to analyser
+            audioElement = new Audio(URL.createObjectURL(file));
+            audioSource = audioContext.createMediaElementSource(audioElement);
+            audioSource.connect(analyser);
+            analyser.connect(audioContext.destination);
+            
+            // Play audio
+            audioElement.play().catch(e => {
+                console.error("Playback failed:", e);
+                songInfo.textContent = "Click somewhere on the page to start playback";
+                
+                // Some browsers require user interaction before playing audio
+                document.body.addEventListener('click', function onClick() {
+                    audioElement.play();
+                    document.body.removeEventListener('click', onClick);
+                    songInfo.textContent = `Now Playing: ${file.name}`;
+                }, { once: true });
+            });
+            
+            songInfo.textContent = `Now Playing: ${file.name}`;
+            
+            // Start visualization
+            if (!isAnimating) {
+                isAnimating = true;
+                animate();
+            }
+        });
+        
+        // Visualization variables
+        let isAnimating = false;
+        const points = [];
+        const numPoints = 150;
+        const maxRadius = Math.min(canvas.width, canvas.height) * 0.4;
+        
+        // Initialize points for smooth wave
+        for (let i = 0; i < numPoints; i++) {
+            points.push({
+                x: 0,
+                y: 0,
+                targetY: 0,
+                speed: 0.1 + Math.random() * 0.1
+            });
+        }
+        
+        // Animation loop
+        function animate() {
+            if (!isAnimating) return;
+            
+            requestAnimationFrame(animate);
+            
+            // Clear canvas with semi-transparent background for trail effect
+            ctx.fillStyle = 'rgba(18, 18, 18, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Get frequency data if analyser exists
+            if (analyser) {
+                analyser.getByteFrequencyData(dataArray);
+            }
+            
+            // Calculate center of canvas
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Update and draw points in a circular formation
+            ctx.beginPath();
+            
+            for (let i = 0; i < numPoints; i++) {
+                const point = points[i];
+                
+                // Get frequency data for this point (scaled to buffer length)
+                const freqIndex = Math.floor(i / numPoints * bufferLength);
+                const frequency = dataArray ? dataArray[freqIndex] / 255 : 0;
+                
+                // Smooth movement toward target
+                point.targetY = frequency * maxRadius;
+                point.y += (point.targetY - point.y) * point.speed;
+                
+                // Calculate angle and position
+                const angle = (i / numPoints) * Math.PI * 2;
+                const x = centerX + Math.cos(angle) * (maxRadius * 0.7 + point.y * 0.3);
+                const y = centerY + Math.sin(angle) * (maxRadius * 0.7 + point.y * 0.3);
+                
+                // Draw line to this point
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+                
+                // Store position for next frame
+                point.x = x;
+                point.y = y;
+            }
+            
+            // Close the path and draw
+            ctx.closePath();
+            
+            // Create gradient for the wave
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, 'rgba(100, 200, 255, 0.8)');
+            gradient.addColorStop(0.5, 'rgba(200, 100, 255, 0.8)');
+            gradient.addColorStop(1, 'rgba(100, 255, 200, 0.8)');
+            
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Fill with semi-transparent color
+            ctx.fillStyle = 'rgba(100, 200, 255, 0.05)';
+            ctx.fill();
+            
+            // Draw center circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, maxRadius * 0.2, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fill();
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            maxRadius = Math.min(canvas.width, canvas.height) * 0.4;
+        });
+    </script>
+</body>
+</html>
